@@ -16,18 +16,26 @@ from langchain_groq import ChatGroq
 
 from tools.tavily_tool import tavily_search
 from tools.flight_tool import search_flights
-from dotenv import dotenv_values
-from pathlib import Path
-import os
+import streamlit as st
+from dotenv import load_dotenv
 
-env_path = Path(__file__).parent / ".env"
-config = dotenv_values(env_path)
-DATABASE_URL = config["DATABASE_URL"]
-print(DATABASE_URL)
+load_dotenv()
+
+def get_secret(key):
+    value = os.getenv(key)
+    if value:
+        return value
+    return st.secrets[key]
+
+GROQ_API_KEY = get_secret("GROQ_API_KEY")
+AVIATIONSTACK_API_KEY = get_secret("AVIATIONSTACK_API_KEY")
+TAVILY_API_KEY = get_secret("TAVILY_API_KEY")
+DATABASE_URL = get_secret("DATABASE_URL")
 
 # LLM
 llm = ChatGroq(
-    model="llama-3.3-70b-versatile"
+    model="llama-3.3-70b-versatile",
+    api_key=GROQ_API_KEY
 )
 
 # State
