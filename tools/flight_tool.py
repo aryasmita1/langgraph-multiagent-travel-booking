@@ -1,10 +1,19 @@
 import os
 import requests
+import streamlit as st
 from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = os.getenv("7d902502ea8e09bb908f88b0e6bc8479")
+
+def get_secret(key):
+    value = os.getenv(key)
+    if value:
+        return value
+    return st.secrets[key]
+
+
+API_KEY = get_secret("AVIATIONSTACK_API_KEY")
 
 
 def search_flights(query):
@@ -27,15 +36,8 @@ def search_flights(query):
         for flight in data["data"][:5]:
 
             airline = flight.get("airline", {}).get("name", "Unknown")
-
-            departure = flight.get(
-                "departure", {}
-            ).get("airport", "Unknown")
-
-            arrival = flight.get(
-                "arrival", {}
-            ).get("airport", "Unknown")
-
+            departure = flight.get("departure", {}).get("airport", "Unknown")
+            arrival = flight.get("arrival", {}).get("airport", "Unknown")
             status = flight.get("flight_status", "Unknown")
 
             flights.append(
